@@ -124,13 +124,15 @@ class UserListSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'date_joined']
 
 
+from decimal import Decimal
+
 class BalanceOperationSerializer(serializers.Serializer):
     """Balansga pul qo'shish yoki ayirish uchun serializer."""
     amount = serializers.DecimalField(
         max_digits=12, 
         decimal_places=2, 
         required=True,
-        min_value=0.01,
+        min_value=Decimal('0.01'),
         error_messages={
             'min_value': "Qiymat 0 dan katta bo'lishi kerak."
         }

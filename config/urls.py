@@ -40,6 +40,9 @@ urlpatterns = [
     # Quizzes API (DTM Test)
     path('api/v1/', include('quizzes.urls', namespace='quizzes')),
 
+    # Certificates API
+    path('api/v1/', include('certificates.urls', namespace='certificates')),
+
     # ─── Swagger UI va ReDoc ──────────────────────────────────────────────────
     path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'accounts',
     'universities',
     'quizzes',
+    'certificates',
 ]
 
 MIDDLEWARE = [
