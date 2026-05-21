@@ -15,6 +15,7 @@ from .serializers import (
     UserProfileSerializer,
     ChangePasswordSerializer,
     UserListSerializer,
+    BalanceOperationSerializer,
 )
 
 
@@ -322,3 +323,91 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     )
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
+
+
+class AddBalanceView(APIView):
+    """
+    Foydalanuvchi balansiga pul qo'shish.
+    """
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="Balansga pul qo'shish",
+        operation_description="Joriy foydalanuvchi balansini ko'paytirish.",
+        request_body=BalanceOperationSerializer,
+        responses={
+            200: openapi.Response(
+                description="Muvaffaqiyatli",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING),
+                        'balance': openapi.Schema(type=openapi.TYPE_NUMBER),
+                    }
+                )
+            ),
+            400: "Noto'g'ri ma'lumotlar",
+        },
+        tags=['Profile'],
+    )
+    def post(self, request):
+        serializer = BalanceOperationSerializer(data=request.data)
+        if serializer.is_valid():
+            amount = serializer.validated_data['amount']
+            request.user.balance += amount
+            request.user.save()
+            return Response(
+                {
+                    "message": "Balans muvaffaqiyatli to'ldirildi.",
+                    "balance": request.user.balance
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SubtractBalanceView(APIView):
+    """
+    Foydalanuvchi balansidan pul ayirish.
+    """
+    permission_classes = [IsAuthenticated]
+
+    @swagger_auto_schema(
+        operation_summary="Balansdan pul ayirish",
+        operation_description="Joriy foydalanuvchi balansidan pul yechish (masalan test yechish uchun).",
+        request_body=BalanceOperationSerializer,
+        responses={
+            200: openapi.Response(
+                description="Muvaffaqiyatli",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'message': openapi.Schema(type=openapi.TYPE_STRING),
+                        'balance': openapi.Schema(type=openapi.TYPE_NUMBER),
+                    }
+                )
+            ),
+            400: "Noto'g'ri ma'lumotlar yoki mablag' yetarli emas",
+        },
+        tags=['Profile'],
+    )
+    def post(self, request):
+        serializer = BalanceOperationSerializer(data=request.data)
+        if serializer.is_valid():
+            amount = serializer.validated_data['amount']
+            if request.user.balance < amount:
+                return Response(
+                    {"error": "Hisobda yetarli mablag' mavjud emas."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            request.user.balance -= amount
+            request.user.save()
+            return Response(
+                {
+                    "message": "Balansdan muvaffaqiyatli yechib olindi.",
+                    "balance": request.user.balance
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

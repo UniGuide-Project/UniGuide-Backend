@@ -9,6 +9,8 @@ from .views import (
     ChangePasswordView,
     UserListView,
     UserDetailView,
+    AddBalanceView,
+    SubtractBalanceView,
 )
 
 app_name = 'accounts'
@@ -23,6 +25,8 @@ urlpatterns = [
     # --- Profil ---
     path('profile/', ProfileView.as_view(), name='profile'),
     path('profile/change-password/', ChangePasswordView.as_view(), name='change_password'),
+    path('profile/balance/add/', AddBalanceView.as_view(), name='add_balance'),
+    path('profile/balance/subtract/', SubtractBalanceView.as_view(), name='subtract_balance'),
 
     # --- Admin (faqat is_staff=True uchun) ---
     path('admin/users/', UserListView.as_view(), name='user_list'),

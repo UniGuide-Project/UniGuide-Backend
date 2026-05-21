@@ -72,8 +72,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'is_active', 'date_joined']
-        read_only_fields = ['id', 'email', 'is_active', 'date_joined']
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'balance', 'is_active', 'date_joined']
+        read_only_fields = ['id', 'email', 'balance', 'is_active', 'date_joined']
 
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -120,5 +120,19 @@ class UserListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'is_active', 'is_staff', 'date_joined']
+        fields = ['id', 'email', 'first_name', 'last_name', 'phone_number', 'balance', 'is_active', 'is_staff', 'date_joined']
         read_only_fields = ['id', 'date_joined']
+
+
+class BalanceOperationSerializer(serializers.Serializer):
+    """Balansga pul qo'shish yoki ayirish uchun serializer."""
+    amount = serializers.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        required=True,
+        min_value=0.01,
+        error_messages={
+            'min_value': "Qiymat 0 dan katta bo'lishi kerak."
+        }
+    )
+

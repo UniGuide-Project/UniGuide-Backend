@@ -28,6 +28,7 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True, verbose_name="Email manzili")
     
     phone_number = models.CharField(max_length=15, blank=True, null=True)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, verbose_name="Balans (so'm)")
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = [] 
@@ -35,4 +36,4 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()  
 
     def __str__(self):
-        return self.email
+        return f"{self.email} ({self.balance} so'm)"
