@@ -67,8 +67,8 @@ class Faculty(models.Model):
     )
     name = models.CharField(max_length=255, verbose_name="Nomi")
     description = models.TextField(blank=True, verbose_name="Tavsif")
-    min_score = models.BigIntegerField(default=0, verbose_name="Minimal ball")
-    grant_score = models.BigIntegerField(default=0, verbose_name="Grant ball")
+    min_score = models.FloatField(default=0.0, verbose_name="Minimal ball")
+    grant_score = models.FloatField(default=0.0, verbose_name="Grant ball")
 
     class Meta:
         verbose_name = "Fakultet"
