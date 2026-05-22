@@ -1,5 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.pagination import PageNumberPagination
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -61,7 +62,7 @@ class UniversityListView(generics.ListAPIView):
         min_rating = self.request.query_params.get('min_rating')
         
         if location:
-            queryset = queryset.filter(location__icontains=location)
+            queryset = queryset.filter(location=location)
         if university_type:
             queryset = queryset.filter(university_type=university_type)
         if rating:
@@ -74,6 +75,78 @@ class UniversityListView(generics.ListAPIView):
     @swagger_auto_schema(
         operation_summary="Universitetlar ro'yxati",
         operation_description="Barcha universitetlarni reyting bo'yicha tartiblangan holda olish (filtrlar bilan).",
+        manual_parameters=[location_param, type_param, rating_param, min_rating_param],
+        responses={200: UniversityListSerializer(many=True)},
+        tags=['Universitetlar'],
+    )
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+class UniversityPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+
+class UniversityPaginatedListView(generics.ListAPIView):
+    """
+    Universitetlar ro'yxati (paginatsiya bilan).
+
+    Ushbu API universitetlarni paginatsiya qilingan holda qaytaradi.
+    Tizimda universitetlar reyting bo'yicha tartiblanmaydi, balki ID bo'yicha tartiblanadi.
+    """
+    serializer_class = UniversityListSerializer
+    permission_classes = [AllowAny]
+    pagination_class = UniversityPagination
+
+    location_param = openapi.Parameter(
+        'location', openapi.IN_QUERY,
+        description="Lokatsiya bo'yicha filtrlash (masalan, 'Toshkent')",
+        type=openapi.TYPE_STRING,
+        required=False,
+    )
+    type_param = openapi.Parameter(
+        'university_type', openapi.IN_QUERY,
+        description="Turi bo'yicha filtrlash ('state' yoki 'private')",
+        type=openapi.TYPE_STRING,
+        required=False,
+    )
+    rating_param = openapi.Parameter(
+        'rating', openapi.IN_QUERY,
+        description="Reyting bo'yicha aniq filtrlash",
+        type=openapi.TYPE_INTEGER,
+        required=False,
+    )
+    min_rating_param = openapi.Parameter(
+        'min_rating', openapi.IN_QUERY,
+        description="Minimal reyting bo'yicha filtrlash (shu reyting va undan yuqori)",
+        type=openapi.TYPE_INTEGER,
+        required=False,
+    )
+
+    def get_queryset(self):
+        queryset = University.objects.all().order_by('id')  # Reyting bo'yicha tartiblanmaydi
+        
+        location = self.request.query_params.get('location')
+        university_type = self.request.query_params.get('university_type')
+        rating = self.request.query_params.get('rating')
+        min_rating = self.request.query_params.get('min_rating')
+        
+        if location:
+            queryset = queryset.filter(location=location)
+        if university_type:
+            queryset = queryset.filter(university_type=university_type)
+        if rating:
+            queryset = queryset.filter(rating=rating)
+        if min_rating:
+            queryset = queryset.filter(rating__gte=min_rating)
+            
+        return queryset
+
+    @swagger_auto_schema(
+        operation_summary="Universitetlar ro'yxati (Paginatsiya bilan)",
+        operation_description="Barcha universitetlarni paginatsiya qilingan va reyting bo'yicha tartiblanmagan holda olish.",
         manual_parameters=[location_param, type_param, rating_param, min_rating_param],
         responses={200: UniversityListSerializer(many=True)},
         tags=['Universitetlar'],

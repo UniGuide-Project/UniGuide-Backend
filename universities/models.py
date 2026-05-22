@@ -9,12 +9,37 @@ class University(models.Model):
         ('private', 'Xususiy'),
     ]
 
+    LOCATION_CHOICES = [
+        ('tashkent_city', 'Toshkent shahri'),
+        ('tashkent', 'Toshkent viloyati'),
+        ('andijan', 'Andijon viloyati'),
+        ('bukhara', 'Buxoro viloyati'),
+        ('fergana', 'Farg\'ona viloyati'),
+        ('jizzakh', 'Jizzax viloyati'),
+        ('khorezm', 'Xorazm viloyati'),
+        ('namangan', 'Namangan viloyati'),
+        ('navoiy', 'Navoiy viloyati'),
+        ('kashkadarya', 'Qashqadaryo viloyati'),
+        ('surkhandarya', 'Surxondaryo viloyati'),
+        ('sirdarya', 'Sirdaryo viloyati'),
+        ('samarkand', 'Samarqand viloyati'),
+        ('karakalpakstan', 'Qoraqalpog\'iston Respublikasi'),
+    ]
+
     name = models.CharField(max_length=255, verbose_name="Nomi")
     description = models.TextField(blank=True, verbose_name="Tavsif")
     img = models.ImageField(upload_to='universities/', blank=True, null=True, verbose_name="Rasm")
     rating = models.BigIntegerField(default=0, verbose_name="Reyting")
+    min_contract = models.BigIntegerField(default=0, blank=True, verbose_name="Minimal kontrakt")
+    max_contract = models.BigIntegerField(default=0, blank=True, verbose_name="Maksimal kontrakt")
     website = models.URLField(max_length=500, blank=True, null=True, verbose_name="Veb-sayt")
-    location = models.CharField(max_length=255, blank=True, null=True, verbose_name="Lokatsiya")
+    location = models.CharField(
+        max_length=50,
+        choices=LOCATION_CHOICES,
+        blank=True,
+        null=True,
+        verbose_name="Lokatsiya"
+    )
     university_type = models.CharField(
         max_length=20,
         choices=UNIVERSITY_TYPES,

@@ -11,7 +11,7 @@ class FacultyInline(admin.TabularInline):
 
 @admin.register(University)
 class UniversityAdmin(admin.ModelAdmin):
-    list_display = ['name', 'rating', 'location', 'university_type', 'faculties_count']
+    list_display = ['name', 'rating', 'min_contract', 'max_contract', 'location', 'university_type', 'faculties_count']
     search_fields = ['name', 'location']
     list_filter = ['university_type', 'rating']
     ordering = ['-rating']

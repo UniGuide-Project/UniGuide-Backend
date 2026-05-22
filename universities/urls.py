@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
     UniversityListView,
+    UniversityPaginatedListView,
     UniversityDetailView,
     UniversityCreateView,
     UniversityUpdateView,
@@ -17,6 +18,7 @@ app_name = 'universities'
 urlpatterns = [
     # --- Universitetlar ---
     path('universities/', UniversityListView.as_view(), name='university_list'),
+    path('universities/paginated/', UniversityPaginatedListView.as_view(), name='university_list_paginated'),
     path('universities/create/', UniversityCreateView.as_view(), name='university_create'),
     path('universities/<int:pk>/', UniversityDetailView.as_view(), name='university_detail'),
     path('universities/<int:pk>/update/', UniversityUpdateView.as_view(), name='university_update'),

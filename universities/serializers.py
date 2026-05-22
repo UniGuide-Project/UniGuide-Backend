@@ -29,7 +29,11 @@ class UniversityListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = University
-        fields = ['id', 'name', 'description', 'img', 'rating', 'website', 'location', 'university_type', 'faculties_count']
+        fields = [
+            'id', 'name', 'description', 'img', 'rating', 
+            'min_contract', 'max_contract', 'website', 
+            'location', 'university_type', 'faculties_count'
+        ]
         read_only_fields = ['id']
 
 
@@ -40,5 +44,9 @@ class UniversityDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = University
-        fields = ['id', 'name', 'description', 'img', 'rating', 'website', 'location', 'university_type', 'faculties']
+        fields = [
+            'id', 'name', 'description', 'img', 'rating', 
+            'min_contract', 'max_contract', 'website', 
+            'location', 'university_type', 'faculties'
+        ]
         read_only_fields = ['id']
