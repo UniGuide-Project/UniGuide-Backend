@@ -21,16 +21,60 @@ class UniversityListView(generics.ListAPIView):
     """
     Barcha universitetlar ro'yxati.
 
-    Har bir universitetning nomi, tavsifi, rasmi, reytingi
-    va fakultetlar soni ko'rsatiladi.
+    Har bir universitetning nomi, tavsifi, rasmi, reytingi,
+    veb-sayti, lokatsiyasi va turi ko'rsatiladi.
     """
-    queryset = University.objects.all()
     serializer_class = UniversityListSerializer
     permission_classes = [AllowAny]
 
+    location_param = openapi.Parameter(
+        'location', openapi.IN_QUERY,
+        description="Lokatsiya bo'yicha filtrlash (masalan, 'Toshkent')",
+        type=openapi.TYPE_STRING,
+        required=False,
+    )
+    type_param = openapi.Parameter(
+        'university_type', openapi.IN_QUERY,
+        description="Turi bo'yicha filtrlash ('state' yoki 'private')",
+        type=openapi.TYPE_STRING,
+        required=False,
+    )
+    rating_param = openapi.Parameter(
+        'rating', openapi.IN_QUERY,
+        description="Reyting bo'yicha aniq filtrlash",
+        type=openapi.TYPE_INTEGER,
+        required=False,
+    )
+    min_rating_param = openapi.Parameter(
+        'min_rating', openapi.IN_QUERY,
+        description="Minimal reyting bo'yicha filtrlash (shu reyting va undan yuqori)",
+        type=openapi.TYPE_INTEGER,
+        required=False,
+    )
+
+    def get_queryset(self):
+        queryset = University.objects.all()
+        
+        location = self.request.query_params.get('location')
+        university_type = self.request.query_params.get('university_type')
+        rating = self.request.query_params.get('rating')
+        min_rating = self.request.query_params.get('min_rating')
+        
+        if location:
+            queryset = queryset.filter(location__icontains=location)
+        if university_type:
+            queryset = queryset.filter(university_type=university_type)
+        if rating:
+            queryset = queryset.filter(rating=rating)
+        if min_rating:
+            queryset = queryset.filter(rating__gte=min_rating)
+            
+        return queryset
+
     @swagger_auto_schema(
         operation_summary="Universitetlar ro'yxati",
-        operation_description="Barcha universitetlarni reyting bo'yicha tartiblangan holda olish.",
+        operation_description="Barcha universitetlarni reyting bo'yicha tartiblangan holda olish (filtrlar bilan).",
+        manual_parameters=[location_param, type_param, rating_param, min_rating_param],
         responses={200: UniversityListSerializer(many=True)},
         tags=['Universitetlar'],
     )
