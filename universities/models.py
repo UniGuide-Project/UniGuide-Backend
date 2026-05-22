@@ -8,6 +8,7 @@ class University(models.Model):
     description = models.TextField(blank=True, verbose_name="Tavsif")
     img = models.ImageField(upload_to='universities/', blank=True, null=True, verbose_name="Rasm")
     rating = models.BigIntegerField(default=0, verbose_name="Reyting")
+    website = models.URLField(max_length=500, blank=True, null=True, verbose_name="Veb-sayt")
 
     class Meta:
         verbose_name = "Universitet"
